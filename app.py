@@ -172,7 +172,7 @@ def generate_pdf(result, confidence, language, image, cancer_type):
 # --- Interfaz de Usuario ---
 lang = st.sidebar.selectbox("🌐 Language / Idioma", list(translations.keys()))
 t = translations[lang]
-model_options = ["CNN", "Random Forest", "Regresión Lineal"]
+model_options = ["CNN", "Random Forest", "Regresión Logistica"]
 selected_model = st.sidebar.selectbox("🧠 Model", model_options)
 
 st.title(t["title"])
