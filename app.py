@@ -58,12 +58,14 @@ texts = {
 
 st.title(texts[lang]["title"])
 st.markdown(f"**{texts[lang]['upload']}**")
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
+
+# Acepta múltiples tipos de imágenes comunes
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "bmp", "webp", "tiff", "jfif"])
 
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Imagen cargada" if lang == "Español" else "Loaded image", use_container_width=True)
+        st.image(image, caption="Imagen cargada" if lang == "Español" else "Loaded image", use_column_width=True)
 
         if st.button(texts[lang]["button"]):
             results = {}
@@ -91,4 +93,3 @@ if uploaded_file is not None:
         st.error(texts[lang]["error"])
     except Exception as e:
         st.error(f"{texts[lang]['error']} ({str(e)})")
-
