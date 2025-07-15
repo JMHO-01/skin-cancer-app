@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import base64
 import io
 import matplotlib.pyplot as plt
@@ -42,7 +42,8 @@ texts = {
         "button": "Analyze Image",
         "result": "Result (simulated)",
         "confidence": "Estimated Confidence",
-        "download": "Download PDF"
+        "download": "Download PDF",
+        "error": "❌ Error processing the image. Please make sure it's a valid file."
     },
     "Español": {
         "title": "Predicción de Cáncer de Piel (Simulado)",
@@ -50,7 +51,8 @@ texts = {
         "button": "Analizar Imagen",
         "result": "Resultado (simulado)",
         "confidence": "Confianza Estimada",
-        "download": "Descargar PDF"
+        "download": "Descargar PDF",
+        "error": "❌ Error al procesar la imagen. Asegúrate de que sea un archivo válido."
     }
 }
 
@@ -70,12 +72,8 @@ if uploaded_file is not None:
                 results[model] = (label, confidence)
 
             sel_label, sel_conf = results[selected_model]
-            if lang == "Español":
-                st.success(f"{texts[lang]['result']}: {sel_label}")
-                st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
-            else:
-                st.success(f"{texts[lang]['result']}: {sel_label}")
-                st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
+            st.success(f"{texts[lang]['result']}: {sel_label}")
+            st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
 
             st.subheader("📊 " + ("Gráfico de Confianza por Modelo" if lang == "Español" else "Confidence Chart by Model"))
             fig, ax = plt.subplots()
@@ -89,5 +87,8 @@ if uploaded_file is not None:
             href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="prediction_report.pdf">{texts[lang]["download"]}</a>'
             st.markdown(href, unsafe_allow_html=True)
 
+    except UnidentifiedImageError:
+        st.error(texts[lang]["error"])
     except Exception as e:
-        st.error("❌ Error al procesar la imagen. Asegúrate de que sea un archivo válido.")
+        st.error(f"{texts[lang]['error']} ({str(e)})")
+
