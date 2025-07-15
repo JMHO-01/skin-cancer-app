@@ -58,35 +58,36 @@ st.title(texts[lang]["title"])
 st.markdown(f"**{texts[lang]['upload']}**")
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 
-if uploaded_file:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Imagen cargada" if lang == "Español" else "Loaded image", use_container_width=True)
+if uploaded_file is not None:
+    try:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Imagen cargada" if lang == "Español" else "Loaded image", use_container_width=True)
 
-    if st.button(texts[lang]["button"]):
-        results = {}
-        for model in model_options:
-            label, confidence = simulate_prediction(image, model)
-            results[model] = (label, confidence)
+        if st.button(texts[lang]["button"]):
+            results = {}
+            for model in model_options:
+                label, confidence = simulate_prediction(image, model)
+                results[model] = (label, confidence)
 
-        # Show selected model only
-        sel_label, sel_conf = results[selected_model]
-        if lang == "Español":
-            st.success(f"{texts[lang]['result']}: {sel_label}")
-            st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
-        else:
-            st.success(f"{texts[lang]['result']}: {sel_label}")
-            st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
+            sel_label, sel_conf = results[selected_model]
+            if lang == "Español":
+                st.success(f"{texts[lang]['result']}: {sel_label}")
+                st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
+            else:
+                st.success(f"{texts[lang]['result']}: {sel_label}")
+                st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
 
-        # Plot bar chart
-        st.subheader("📊 " + ("Gráfico de Confianza por Modelo" if lang == "Español" else "Confidence Chart by Model"))
-        fig, ax = plt.subplots()
-        ax.bar(results.keys(), [conf for _, conf in results.values()], color=["green", "blue", "orange"])
-        ax.set_ylabel('%')
-        ax.set_ylim(0, 100)
-        st.pyplot(fig)
+            st.subheader("📊 " + ("Gráfico de Confianza por Modelo" if lang == "Español" else "Confidence Chart by Model"))
+            fig, ax = plt.subplots()
+            ax.bar(results.keys(), [conf for _, conf in results.values()], color=["green", "blue", "orange"])
+            ax.set_ylabel('%')
+            ax.set_ylim(0, 100)
+            st.pyplot(fig)
 
-        # PDF download
-        pdf_bytes = generate_pdf(sel_label, sel_conf, lang)
-        b64_pdf = base64.b64encode(pdf_bytes).decode()
-        href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="prediction_report.pdf">{texts[lang]["download"]}</a>'
-        st.markdown(href, unsafe_allow_html=True)
+            pdf_bytes = generate_pdf(sel_label, sel_conf, lang)
+            b64_pdf = base64.b64encode(pdf_bytes).decode()
+            href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="prediction_report.pdf">{texts[lang]["download"]}</a>'
+            st.markdown(href, unsafe_allow_html=True)
+
+    except Exception as e:
+        st.error("❌ Error al procesar la imagen. Asegúrate de que sea un archivo válido.")
