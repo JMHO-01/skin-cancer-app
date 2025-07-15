@@ -6,82 +6,8 @@ import io
 import matplotlib.pyplot as plt
 from fpdf import FPDF
 
-# --- Simulated prediction function ---
-def simulate_prediction(image, model_name):
-    np.random.seed(len(model_name) + len(image.getbands()))
-    confidence = np.random.uniform(50, 100)
-    label = "Malignant" if confidence > 70 else "Benign"
-    return label, confidence
-
-# --- PDF generation function with image and recommendations ---
-def generate_pdf(result, confidence, language, pil_image):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=14)
-
-    # Título
-    if language == "Español":
-        pdf.cell(0, 10, "Resultado del Análisis de Cáncer de Piel", ln=True, align='C')
-    elif language == "Français":
-        pdf.cell(0, 10, "Résultat de l'analyse du cancer de la peau", ln=True, align='C')
-    else:
-        pdf.cell(0, 10, "Skin Cancer Analysis Result", ln=True, align='C')
-
-    pdf.ln(10)
-    pdf.set_font("Arial", size=12)
-
-    # Resultado
-    pdf.cell(0, 10, f"{'Resultado' if language == 'Español' else 'Result'}: {result}", ln=True)
-    pdf.cell(0, 10, f"{'Confianza estimada' if language == 'Español' else 'Estimated confidence'}: {confidence:.2f}%", ln=True)
-    pdf.ln(10)
-
-    # Descripción
-    description = {
-        "Español": "Este resultado ha sido generado a través de un modelo de predicción simulado. Se recomienda no tomar decisiones médicas basadas únicamente en esta evaluación.",
-        "Français": "Ce résultat a été généré à l'aide d'un modèle simulé. Il est déconseillé de prendre des décisions médicales uniquement sur cette base.",
-        "English": "This result has been generated using a simulated prediction model. Please do not make medical decisions based solely on this result."
-    }
-    pdf.multi_cell(0, 10, description.get(language, description["English"]))
-    pdf.ln(5)
-
-    # Recomendación
-    if result == "Malignant":
-        reco = {
-            "Español": "🔴 Recomendación: Acude a un dermatólogo lo antes posible para una evaluación profesional.",
-            "Français": "🔴 Recommandation : Consultez un dermatologue dès que possible pour un avis professionnel.",
-            "English": "🔴 Recommendation: See a dermatologist as soon as possible for a professional evaluation."
-        }
-    else:
-        reco = {
-            "Español": "🟢 Recomendación: Continúa monitoreando la zona y consulta con un especialista si observas cambios.",
-            "Français": "🟢 Recommandation : Continuez à surveiller la zone et consultez un spécialiste si vous remarquez des changements.",
-            "English": "🟢 Recommendation: Keep monitoring the area and consult a specialist if you notice changes."
-        }
-    pdf.multi_cell(0, 10, reco.get(language, reco["English"]))
-    pdf.ln(5)
-
-    # Agregar imagen evaluada
-    image_path = "/tmp/evaluated_image.jpg"
-    pil_image.save(image_path)
-    pdf.image(image_path, x=40, w=130)
-
-    return pdf.output(dest='S').encode('latin1')
-
-# --- Idiomas disponibles ---
-lang = st.sidebar.selectbox("🌐 Select Language / Selecciona Idioma", ["English", "Español", "Français"])
-model_options = ["CNN", "Random Forest", "Regresión Lineal"]
-selected_model = st.sidebar.selectbox("🧠 Select Model", model_options)
-
-texts = {
-    "English": {
-        "title": "Skin Cancer Prediction (Simulated)",
-        "upload": "Upload a skin lesion image",
-        "button": "Analyze Image",
-        "result": "Result (simulated)",
-        "confidence": "Estimated Confidence",
-        "download": "Download PDF",
-        "error": "❌ Error processing the image. Please make sure it's a valid file."
-    },
+# --- Traducciones multilingües ---
+translations = {
     "Español": {
         "title": "Predicción de Cáncer de Piel (Simulado)",
         "upload": "Sube una imagen de lesión en la piel",
@@ -89,7 +15,32 @@ texts = {
         "result": "Resultado (simulado)",
         "confidence": "Confianza Estimada",
         "download": "Descargar PDF",
-        "error": "❌ Error al procesar la imagen. Asegúrate de que sea un archivo válido."
+        "error": "❌ Error al procesar la imagen. Asegúrate de que sea un archivo válido.",
+        "chart": "Gráfico de Confianza por Modelo",
+        "recommendation_malignant": "Recomendamos acudir a un dermatólogo para una evaluación profesional.",
+        "recommendation_benign": "No se detectan signos alarmantes, pero es buena práctica hacer controles periódicos.",
+        "pdf_title": "Resultado del Análisis de Cáncer de Piel",
+        "pdf_result": "Resultado",
+        "pdf_confidence": "Confianza estimada",
+        "pdf_recommendation": "Recomendación",
+        "pdf_image_label": "Imagen analizada"
+    },
+    "English": {
+        "title": "Skin Cancer Prediction (Simulated)",
+        "upload": "Upload a skin lesion image",
+        "button": "Analyze Image",
+        "result": "Result (simulated)",
+        "confidence": "Estimated Confidence",
+        "download": "Download PDF",
+        "error": "❌ Error processing the image. Please make sure it's a valid file.",
+        "chart": "Confidence Chart by Model",
+        "recommendation_malignant": "We recommend visiting a dermatologist for professional evaluation.",
+        "recommendation_benign": "No alarming signs detected, but regular checkups are advisable.",
+        "pdf_title": "Skin Cancer Analysis Result",
+        "pdf_result": "Result",
+        "pdf_confidence": "Estimated confidence",
+        "pdf_recommendation": "Recommendation",
+        "pdf_image_label": "Analyzed Image"
     },
     "Français": {
         "title": "Prédiction du cancer de la peau (simulée)",
@@ -98,48 +49,171 @@ texts = {
         "result": "Résultat (simulé)",
         "confidence": "Confiance estimée",
         "download": "Télécharger le PDF",
-        "error": "❌ Erreur lors du traitement de l'image. Assurez-vous que le fichier est valide."
+        "error": "❌ Erreur de traitement de l’image. Assurez-vous qu’il s’agisse d’un fichier valide.",
+        "chart": "Graphique de confiance par modèle",
+        "recommendation_malignant": "Nous vous recommandons de consulter un dermatologue pour une évaluation.",
+        "recommendation_benign": "Aucun signe inquiétant détecté, mais des contrôles réguliers sont recommandés.",
+        "pdf_title": "Résultat de l'analyse du cancer de la peau",
+        "pdf_result": "Résultat",
+        "pdf_confidence": "Confiance estimée",
+        "pdf_recommendation": "Recommandation",
+        "pdf_image_label": "Image analysée"
+    },
+    "Deutsch": {
+        "title": "Hautkrebs-Vorhersage (Simuliert)",
+        "upload": "Laden Sie ein Bild der Hautläsion hoch",
+        "button": "Bild analysieren",
+        "result": "Ergebnis (simuliert)",
+        "confidence": "Geschätzte Zuverlässigkeit",
+        "download": "PDF herunterladen",
+        "error": "❌ Fehler beim Verarbeiten des Bildes. Bitte stellen Sie sicher, dass es sich um eine gültige Datei handelt.",
+        "chart": "Vertrauensdiagramm nach Modell",
+        "recommendation_malignant": "Wir empfehlen, einen Dermatologen für eine professionelle Bewertung aufzusuchen.",
+        "recommendation_benign": "Keine alarmierenden Anzeichen, aber regelmäßige Kontrollen sind ratsam.",
+        "pdf_title": "Ergebnis der Hautkrebsanalyse",
+        "pdf_result": "Ergebnis",
+        "pdf_confidence": "Geschätzte Zuverlässigkeit",
+        "pdf_recommendation": "Empfehlung",
+        "pdf_image_label": "Analysiertes Bild"
+    },
+    "Português": {
+        "title": "Predição de Câncer de Pele (Simulado)",
+        "upload": "Envie uma imagem de lesão na pele",
+        "button": "Analisar Imagem",
+        "result": "Resultado (simulado)",
+        "confidence": "Confiança Estimada",
+        "download": "Baixar PDF",
+        "error": "❌ Erro ao processar a imagem. Certifique-se de que é um arquivo válido.",
+        "chart": "Gráfico de Confiança por Modelo",
+        "recommendation_malignant": "Recomenda-se procurar um dermatologista para uma avaliação profissional.",
+        "recommendation_benign": "Sem sinais alarmantes, mas exames regulares são recomendados.",
+        "pdf_title": "Resultado da Análise de Câncer de Pele",
+        "pdf_result": "Resultado",
+        "pdf_confidence": "Confiança estimada",
+        "pdf_recommendation": "Recomendação",
+        "pdf_image_label": "Imagem analisada"
+    },
+    "Italiano": {
+        "title": "Previsione del Cancro della Pelle (Simulato)",
+        "upload": "Carica un'immagine della lesione cutanea",
+        "button": "Analizza Immagine",
+        "result": "Risultato (simulato)",
+        "confidence": "Affidabilità stimata",
+        "download": "Scarica PDF",
+        "error": "❌ Errore durante l'elaborazione dell'immagine. Assicurati che il file sia valido.",
+        "chart": "Grafico di Affidabilità per Modello",
+        "recommendation_malignant": "Si consiglia di consultare un dermatologo per una valutazione professionale.",
+        "recommendation_benign": "Nessun segno allarmante rilevato, ma controlli regolari sono consigliati.",
+        "pdf_title": "Risultato dell'Analisi del Cancro della Pelle",
+        "pdf_result": "Risultato",
+        "pdf_confidence": "Affidabilità stimata",
+        "pdf_recommendation": "Raccomandazione",
+        "pdf_image_label": "Immagine analizzata"
+    },
+    "日本語": {
+        "title": "皮膚がん予測（シミュレーション）",
+        "upload": "皮膚病変の画像をアップロードしてください",
+        "button": "画像を解析する",
+        "result": "結果（シミュレート）",
+        "confidence": "推定信頼度",
+        "download": "PDFをダウンロード",
+        "error": "❌ 画像の処理中にエラーが発生しました。正しいファイルであることを確認してください。",
+        "chart": "モデル別信頼度チャート",
+        "recommendation_malignant": "専門的な評価のために皮膚科医の診察を受けてください。",
+        "recommendation_benign": "異常は見られませんが、定期的な検診をお勧めします。",
+        "pdf_title": "皮膚がん解析結果",
+        "pdf_result": "結果",
+        "pdf_confidence": "推定信頼度",
+        "pdf_recommendation": "推奨事項",
+        "pdf_image_label": "解析された画像"
+    },
+    "中文": {
+        "title": "皮肤癌预测（模拟）",
+        "upload": "上传皮肤病变图像",
+        "button": "分析图像",
+        "result": "结果（模拟）",
+        "confidence": "估计置信度",
+        "download": "下载PDF",
+        "error": "❌ 图像处理出错。请确保文件有效。",
+        "chart": "按模型的置信图",
+        "recommendation_malignant": "建议就诊皮肤科医生进行专业评估。",
+        "recommendation_benign": "未检测到异常迹象，但建议定期检查。",
+        "pdf_title": "皮肤癌分析结果",
+        "pdf_result": "结果",
+        "pdf_confidence": "估计置信度",
+        "pdf_recommendation": "建议",
+        "pdf_image_label": "分析图像"
     }
 }
 
-st.title(texts[lang]["title"])
-st.markdown(f"**{texts[lang]['upload']}**")
+# --- Simulated prediction ---
+def simulate_prediction(image, model_name):
+    np.random.seed(len(model_name) + len(image.getbands()))
+    confidence = np.random.uniform(50, 100)
+    label = "Malignant" if confidence > 70 else "Benign"
+    return label, confidence
 
+# --- PDF generation ---
+def generate_pdf(result, confidence, language, image):
+    t = translations[language]
+    buffer = io.BytesIO()
+    image.save(buffer, format='JPEG')
+    image_bytes = buffer.getvalue()
+    image_path = "temp.jpg"
+    with open(image_path, "wb") as f:
+        f.write(image_bytes)
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=14)
+    pdf.cell(200, 10, txt=t["pdf_title"], ln=True, align='C')
+    pdf.ln(10)
+    pdf.cell(200, 10, txt=f"{t['pdf_result']}: {result}", ln=True)
+    pdf.cell(200, 10, txt=f"{t['pdf_confidence']}: {confidence:.2f}%", ln=True)
+    pdf.cell(200, 10, txt=f"{t['pdf_recommendation']}: {t['recommendation_malignant' if result == 'Malignant' else 'recommendation_benign']}", ln=True)
+    pdf.ln(10)
+    pdf.cell(200, 10, txt=t["pdf_image_label"], ln=True)
+    pdf.image(image_path, x=10, y=None, w=100)
+    return pdf.output(dest='S').encode('latin1')
+
+# --- UI ---
+lang = st.sidebar.selectbox("🌐 Language / Idioma / Langue", list(translations.keys()))
+t = translations[lang]
+model_options = ["CNN", "Random Forest", "Regresión Lineal"]
+selected_model = st.sidebar.selectbox("🧠 Model", model_options)
+
+st.title(t["title"])
+st.markdown(f"**{t['upload']}**")
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "bmp", "webp", "tiff", "jfif", "tif"])
 
-if uploaded_file is not None:
+if uploaded_file:
     try:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Imagen cargada" if lang == "Español" else "Image chargée" if lang == "Français" else "Loaded image", use_column_width=True)
+        st.image(image, caption=t["upload"], use_column_width=True)
 
-        if st.button(texts[lang]["button"]):
+        if st.button(t["button"]):
             results = {}
             for model in model_options:
                 label, confidence = simulate_prediction(image, model)
                 results[model] = (label, confidence)
 
             sel_label, sel_conf = results[selected_model]
-            st.success(f"{texts[lang]['result']}: {sel_label}")
-            st.info(f"{texts[lang]['confidence']}: {sel_conf:.1f}%")
+            st.success(f"{t['result']}: {sel_label}")
+            st.info(f"{t['confidence']}: {sel_conf:.1f}%")
 
-            st.subheader("📊 " + (
-                "Gráfico de Confianza por Modelo" if lang == "Español"
-                else "Graphique de confiance par modèle" if lang == "Français"
-                else "Confidence Chart by Model"
-            ))
-
+            st.subheader("📊 " + t["chart"])
             fig, ax = plt.subplots()
-            ax.bar(results.keys(), [conf for _, conf in results.values()], color=["green", "blue", "orange"])
+            ax.bar(results.keys(), [c for _, c in results.values()], color=["green", "blue", "orange"])
             ax.set_ylabel('%')
             ax.set_ylim(0, 100)
             st.pyplot(fig)
 
             pdf_bytes = generate_pdf(sel_label, sel_conf, lang, image)
             b64_pdf = base64.b64encode(pdf_bytes).decode()
-            href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="prediction_report.pdf">{texts[lang]["download"]}</a>'
+            href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="prediction_report.pdf">{t["download"]}</a>'
             st.markdown(href, unsafe_allow_html=True)
 
     except UnidentifiedImageError:
-        st.error(texts[lang]["error"])
+        st.error(t["error"])
     except Exception as e:
-        st.error(f"{texts[lang]['error']} ({str(e)})")
+        st.error(f"{t['error']} ({str(e)})")
