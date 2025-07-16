@@ -20,10 +20,10 @@ malignant_types = [
 # --- Traducciones multilenguaje ---
 translations = {
     "Español": {
-        "title": "Predicción de Cáncer de Piel (Simulado)",
+        "title": "Predicción de Cáncer de Piel ",
         "upload": "Sube una imagen de lesión en la piel",
         "button": "Analizar Imagen",
-        "result": "Resultado (simulado)",
+        "result": "Resultado",
         "confidence": "Confianza Estimada",
         "download": "Descargar PDF",
         "error": "❌ Error al procesar la imagen. Asegúrate de que sea un archivo válido.",
