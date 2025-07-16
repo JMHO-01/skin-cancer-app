@@ -39,10 +39,10 @@ translations = {
         "pdf_timestamp": "Fecha y hora del análisis"
     },
     "English": {
-        "title": "Skin Cancer Prediction (Simulated)",
+        "title": "Skin Cancer Prediction",
         "upload": "Upload a skin lesion image",
         "button": "Analyze Image",
-        "result": "Result (simulated)",
+        "result": "Result",
         "confidence": "Estimated Confidence",
         "download": "Download PDF",
         "error": "❌ Error processing the image. Please make sure it's a valid file.",
@@ -58,10 +58,10 @@ translations = {
         "pdf_timestamp": "Date and Time of Analysis"
     },
     "Français": {
-        "title": "Prédiction du Cancer de la Peau (Simulé)",
+        "title": "Prédiction du Cancer de la Peau",
         "upload": "Téléchargez une image de lésion cutanée",
         "button": "Analyser l'image",
-        "result": "Résultat (simulé)",
+        "result": "Résultat",
         "confidence": "Confiance estimée",
         "download": "Télécharger le PDF",
         "error": "❌ Erreur lors du traitement de l'image. Vérifiez que le fichier est valide.",
@@ -77,10 +77,10 @@ translations = {
         "pdf_timestamp": "Date et heure de l'analyse"
     },
     "Deutsch": {
-        "title": "Hautkrebs-Vorhersage (Simuliert)",
+        "title": "Hautkrebs-Vorhersage",
         "upload": "Lade ein Bild einer Hautläsion hoch",
         "button": "Bild analysieren",
-        "result": "Ergebnis (simuliert)",
+        "result": "Ergebnis",
         "confidence": "Geschätzte Sicherheit",
         "download": "PDF herunterladen",
         "error": "❌ Fehler beim Verarbeiten des Bildes. Bitte prüfen Sie die Datei.",
@@ -96,10 +96,10 @@ translations = {
         "pdf_timestamp": "Datum und Uhrzeit der Analyse"
     },
     "Português": {
-        "title": "Previsão de Câncer de Pele (Simulada)",
+        "title": "Previsão de Câncer de Pele",
         "upload": "Envie uma imagem de lesão de pele",
         "button": "Analisar Imagem",
-        "result": "Resultado (simulado)",
+        "result": "Resultado",
         "confidence": "Confiança Estimada",
         "download": "Baixar PDF",
         "error": "❌ Erro ao processar a imagem. Verifique se é um arquivo válido.",
@@ -115,10 +115,10 @@ translations = {
         "pdf_timestamp": "Data e hora da análise"
     },
     "Italiano": {
-        "title": "Previsione Cancro della Pelle (Simulata)",
+        "title": "Previsione Cancro della Pelle",
         "upload": "Carica un'immagine della lesione cutanea",
         "button": "Analizza Immagine",
-        "result": "Risultato (simulato)",
+        "result": "Risultato",
         "confidence": "Affidabilità Stimata",
         "download": "Scarica PDF",
         "error": "❌ Errore nell'elaborazione dell'immagine. Verifica che il file sia valido.",
