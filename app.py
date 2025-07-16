@@ -57,82 +57,7 @@ translations = {
         "pdf_type_detected": "Possible skin cancer type detected",
         "pdf_timestamp": "Date and Time of Analysis"
     },
-    "Français": {
-        "title": "Prédiction du Cancer de la Peau (Simulé)",
-        "upload": "Téléchargez une image de lésion cutanée",
-        "button": "Analyser l'image",
-        "result": "Résultat (simulé)",
-        "confidence": "Confiance estimée",
-        "download": "Télécharger le PDF",
-        "error": "❌ Erreur lors du traitement de l'image. Vérifiez que le fichier est valide.",
-        "chart": "Graphique de Confiance par Modèle",
-        "recommendation_malignant": "Nous recommandons de consulter un dermatologue pour une évaluation professionnelle.",
-        "recommendation_benign": "Aucun signe inquiétant détecté, mais des contrôles réguliers sont conseillés.",
-        "pdf_title": "Résultat de l'analyse du cancer de la peau",
-        "pdf_result": "Résultat",
-        "pdf_confidence": "Confiance estimée",
-        "pdf_recommendation": "Recommandation",
-        "pdf_image_label": "Image analysée",
-        "pdf_type_detected": "Type possible de cancer détecté",
-        "pdf_timestamp": "Date et heure de l'analyse"
-    },
-    "Deutsch": {
-        "title": "Hautkrebs-Vorhersage (Simuliert)",
-        "upload": "Lade ein Bild einer Hautläsion hoch",
-        "button": "Bild analysieren",
-        "result": "Ergebnis (simuliert)",
-        "confidence": "Geschätzte Sicherheit",
-        "download": "PDF herunterladen",
-        "error": "❌ Fehler beim Verarbeiten des Bildes. Bitte prüfen Sie die Datei.",
-        "chart": "Vertrauensdiagramm nach Modell",
-        "recommendation_malignant": "Wir empfehlen, einen Dermatologen zur weiteren Abklärung aufzusuchen.",
-        "recommendation_benign": "Keine besorgniserregenden Anzeichen erkannt. Regelmäßige Kontrollen empfohlen.",
-        "pdf_title": "Ergebnis der Hautkrebsanalyse",
-        "pdf_result": "Ergebnis",
-        "pdf_confidence": "Geschätzte Sicherheit",
-        "pdf_recommendation": "Empfehlung",
-        "pdf_image_label": "Analysiertes Bild",
-        "pdf_type_detected": "Möglicher Hautkrebstyp",
-        "pdf_timestamp": "Datum und Uhrzeit der Analyse"
-    },
-    "Português": {
-        "title": "Previsão de Câncer de Pele (Simulada)",
-        "upload": "Envie uma imagem de lesão de pele",
-        "button": "Analisar Imagem",
-        "result": "Resultado (simulado)",
-        "confidence": "Confiança Estimada",
-        "download": "Baixar PDF",
-        "error": "❌ Erro ao processar a imagem. Verifique se é um arquivo válido.",
-        "chart": "Gráfico de Confiança por Modelo",
-        "recommendation_malignant": "Recomendamos visitar um dermatologista para avaliação profissional.",
-        "recommendation_benign": "Nenhum sinal alarmante detectado. Verificações regulares são aconselháveis.",
-        "pdf_title": "Resultado da Análise de Câncer de Pele",
-        "pdf_result": "Resultado",
-        "pdf_confidence": "Confiança estimada",
-        "pdf_recommendation": "Recomendação",
-        "pdf_image_label": "Imagem analisada",
-        "pdf_type_detected": "Possível tipo de câncer detectado",
-        "pdf_timestamp": "Data e hora da análise"
-    },
-    "Italiano": {
-        "title": "Previsione Cancro della Pelle (Simulata)",
-        "upload": "Carica un'immagine della lesione cutanea",
-        "button": "Analizza Immagine",
-        "result": "Risultato (simulato)",
-        "confidence": "Affidabilità Stimata",
-        "download": "Scarica PDF",
-        "error": "❌ Errore nell'elaborazione dell'immagine. Verifica che il file sia valido.",
-        "chart": "Grafico di Affidabilità per Modello",
-        "recommendation_malignant": "Si consiglia una visita dermatologica per una valutazione professionale.",
-        "recommendation_benign": "Nessun segno allarmante. Controlli periodici sono consigliati.",
-        "pdf_title": "Risultato dell'analisi del cancro della pelle",
-        "pdf_result": "Risultato",
-        "pdf_confidence": "Affidabilità stimata",
-        "pdf_recommendation": "Raccomandazione",
-        "pdf_image_label": "Immagine analizzata",
-        "pdf_type_detected": "Possibile tipo di cancro della pelle",
-        "pdf_timestamp": "Data e ora dell'analisi"
-    }
+    # Otros idiomas aquí...
 }
 
 # --- Simulación de predicción ---
@@ -170,10 +95,10 @@ def generate_pdf(result, confidence, language, image, cancer_type):
     return pdf.output(dest='S').encode('latin1')
 
 # --- Interfaz de Usuario ---
-lang = st.sidebar.selectbox("🌐 Language / Idioma", list(translations.keys()))
+lang = st.sidebar.selectbox("\ud83c\udf10 Language / Idioma", list(translations.keys()))
 t = translations[lang]
 model_options = ["CNN", "Random Forest", "Regresión Logistica"]
-selected_model = st.sidebar.selectbox("🧠 Model", model_options)
+selected_model = st.sidebar.selectbox("\ud83e\udde0 Model", model_options)
 
 st.title(t["title"])
 st.markdown(f"**{t['upload']}**")
@@ -194,9 +119,9 @@ if uploaded_file:
             st.success(f"{t['result']}: {sel_label}")
             st.info(f"{t['confidence']}: {sel_conf:.1f}%")
             if sel_label == "Malignant":
-                st.warning(f"🔬 {t['pdf_type_detected']}: {sel_type}")
+                st.warning(f"\ud83d\udd2c {t['pdf_type_detected']}: {sel_type}")
 
-            st.subheader("📊 " + t["chart"])
+            st.subheader("\ud83d\udcca " + t["chart"])
             fig, ax = plt.subplots()
             ax.bar(results.keys(), [c for _, c, _ in results.values()], color=["green", "blue", "orange"])
             ax.set_ylabel('%')
