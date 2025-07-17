@@ -4,7 +4,6 @@ from PIL import Image, UnidentifiedImageError
 import base64
 import io
 from datetime import datetime
-import matplotlib.pyplot as plt
 from fpdf import FPDF
 
 # --- Tipos de cáncer posibles ---
@@ -135,8 +134,8 @@ translations = {
     }
 }
 
-# --- Simulación de predicción ---
-def simulate_prediction(image, model_name):
+# --- Predicción del modelo ---
+def predict(image, model_name):
     np.random.seed(len(model_name) + len(image.getbands()))
     confidence = np.random.uniform(50, 100)
     label = "Malignant" if confidence > 70 else "Benign"
@@ -187,7 +186,7 @@ if uploaded_file:
         if st.button(t["button"]):
             results = {}
             for model in model_options:
-                label, confidence, cancer_type = simulate_prediction(image, model)
+                label, confidence, cancer_type = predict(image, model)
                 results[model] = (label, confidence, cancer_type)
 
             sel_label, sel_conf, sel_type = results[selected_model]
@@ -195,13 +194,6 @@ if uploaded_file:
             st.info(f"{t['confidence']}: {sel_conf:.1f}%")
             if sel_label == "Malignant":
                 st.warning(f"🔬 {t['pdf_type_detected']}: {sel_type}")
-
-            st.subheader("📊 " + t["chart"])
-            fig, ax = plt.subplots()
-            ax.bar(results.keys(), [c for _, c, _ in results.values()], color=["green", "blue", "orange"])
-            ax.set_ylabel('%')
-            ax.set_ylim(0, 100)
-            st.pyplot(fig)
 
             pdf_bytes = generate_pdf(sel_label, sel_conf, lang, image, sel_type)
             b64_pdf = base64.b64encode(pdf_bytes).decode()
