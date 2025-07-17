@@ -341,19 +341,18 @@ uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "bmp", "webp", 
 if uploaded_file:
     try:
         original_image = Image.open(uploaded_file)
-normalized_image = apply_clahe(original_image)
-rotated_image = normalized_image.rotate(np.random.uniform(-15, 15))
+        normalized_image = apply_clahe(original_image)
+        rotated_image = normalized_image.rotate(np.random.uniform(-15, 15))
+        # Mostrar comparación visual
+        st.markdown("### Imagen original vs procesada")
+        st.image(
+    [    original_image, rotated_image],
+        caption=["Original", "Procesada (CLAHE + rotación)"],
+        width=300
+        )
 
-# Mostrar comparación visual
-st.markdown("### Imagen original vs procesada")
-st.image(
-    [original_image, rotated_image],
-    caption=["Original", "Procesada (CLAHE + rotación)"],
-    width=300
-)
-
-# Esta es la imagen que se usará para predecir
-image = rotated_image
+        # Esta es la imagen que se usará para predecir
+        image = rotated_image
 
         if st.button(t["button"]):
             results = {}
