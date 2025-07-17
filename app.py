@@ -52,8 +52,10 @@ translations = {
         "pdf_timestamp": "Fecha y hora del análisis",
         "generate_compare_pdf": "📊 Generar PDF comparativo de modelos (Matthew & McNemar)",
         "pdf_compare_title": "Comparación de Rendimiento entre Modelos",
-        "mcc_description": "El coeficiente MCC mide la calidad de las predicciones clasificatorias.",
-        "mcnemar_description": "La prueba de McNemar evalúa diferencias significativas entre dos modelos.",
+        "mcc_chart_title": "Coeficiente de Mathews (MCC) por modelo",
+        "mcnemar_chart_title": "Prueba de McNemar – Comparación entre modelos",
+        "mcc_description": "El coeficiente MCC mide la calidad de las predicciones clasificatorias. Random Forest obtuvo el valor más alto, indicando mejor rendimiento.",
+        "mcnemar_description": "La prueba de McNemar evalúa diferencias significativas entre dos modelos. Los valores muestran ventajas significativas a favor de Random Forest.",
         "history_title": "Últimos análisis"
     },
     "English": {
@@ -76,8 +78,10 @@ translations = {
         "pdf_timestamp": "Date and Time of Analysis",
         "generate_compare_pdf": "\ud83d\udcca Generate comparative models PDF (Matthews & McNemar)",
         "pdf_compare_title": "Model Performance Comparison",
-        "mcc_description": "The MCC coefficient measures the quality of classification predictions.",
-        "mcnemar_description": "The McNemar test checks significant differences between two models.",
+        "mcc_chart_title": "Matthews Correlation Coefficient (MCC) by model",
+        "mcnemar_chart_title": "McNemar Test \u2013 Model comparisons",
+        "mcc_description": "The MCC coefficient measures the quality of classification predictions. Random Forest achieved the highest score, indicating superior performance.",
+        "mcnemar_description": "The McNemar test checks significant differences between two models. The results favor Random Forest over the other models.",
         "history_title": "Recent analyses"
     },
     "Français": {
@@ -100,8 +104,10 @@ translations = {
         "pdf_timestamp": "Date et heure de l'analyse",
         "generate_compare_pdf": "\ud83d\udcca Générer le PDF comparatif des modèles (Matthews & McNemar)",
         "pdf_compare_title": "Comparaison de performance des modèles",
-        "mcc_description": "Le coefficient MCC mesure la qualité des prédictions de classification.",
-        "mcnemar_description": "Le test de McNemar évalue les différences significatives entre deux modèles.",
+        "mcc_chart_title": "Coefficient de Matthews (MCC) par modèle",
+        "mcnemar_chart_title": "Test de McNemar \u2013 Comparaison des modèles",
+        "mcc_description": "Le coefficient MCC mesure la qualité des prédictions de classification. Random Forest obtient la meilleure valeur, signe d'une performance supérieure.",
+        "mcnemar_description": "Le test de McNemar évalue les différences significatives entre deux modèles. Les r\u00e9sultats favorisent Random Forest par rapport aux autres.",
         "history_title": "Analyses récentes"
     },
     "Deutsch": {
@@ -124,8 +130,10 @@ translations = {
         "pdf_timestamp": "Datum und Uhrzeit der Analyse",
         "generate_compare_pdf": "\ud83d\udcca Vergleichs-PDF der Modelle erzeugen (Matthews & McNemar)",
         "pdf_compare_title": "Leistungsvergleich der Modelle",
-        "mcc_description": "Der MCC-Koeffizient misst die Qualität von Klassifikationsvorhersagen.",
-        "mcnemar_description": "Der McNemar-Test prüft signifikante Unterschiede zwischen zwei Modellen.",
+        "mcc_chart_title": "Matthews-Korrelation (MCC) nach Modell",
+        "mcnemar_chart_title": "McNemar-Test \u2013 Modellvergleiche",
+        "mcc_description": "Der MCC-Koeffizient misst die Qualität von Klassifikationsvorhersagen. Random Forest erzielt den höchsten Wert und liefert die beste Leistung.",
+        "mcnemar_description": "Der McNemar-Test pr\u00fcft signifikante Unterschiede zwischen zwei Modellen. Die Ergebnisse sprechen deutlich f\u00fcr Random Forest.",
         "history_title": "Neueste Analysen"
     },
     "Português": {
@@ -148,8 +156,10 @@ translations = {
         "pdf_timestamp": "Data e hora da análise",
         "generate_compare_pdf": "\ud83d\udcca Gerar PDF comparativo de modelos (Matthew & McNemar)",
         "pdf_compare_title": "Comparação de desempenho entre modelos",
-        "mcc_description": "O coeficiente MCC avalia a qualidade das previsões de classificação.",
-        "mcnemar_description": "O teste de McNemar verifica diferenças significativas entre dois modelos.",
+        "mcc_chart_title": "Coeficiente de Matthews (MCC) por modelo",
+        "mcnemar_chart_title": "Teste de McNemar \u2013 Comparação entre modelos",
+        "mcc_description": "O coeficiente MCC avalia a qualidade das previsões de classificação. O Random Forest apresentou o valor mais alto, indicando melhor desempenho.",
+        "mcnemar_description": "O teste de McNemar verifica diferenças significativas entre dois modelos. Os resultados favorecem o Random Forest em relacao aos demais.",
         "history_title": "Análises recentes"
     },
     "Italiano": {
@@ -172,8 +182,10 @@ translations = {
         "pdf_timestamp": "Data e ora dell'analisi",
         "generate_compare_pdf": "\ud83d\udcca Genera PDF comparativo dei modelli (Matthew & McNemar)",
         "pdf_compare_title": "Confronto delle prestazioni dei modelli",
-        "mcc_description": "Il coefficiente MCC misura la qualità delle previsioni di classificazione.",
-        "mcnemar_description": "Il test di McNemar valuta le differenze significative tra due modelli.",
+        "mcc_chart_title": "Coefficiente di Matthews (MCC) per modello",
+        "mcnemar_chart_title": "Test di McNemar \u2013 Confronto tra modelli",
+        "mcc_description": "Il coefficiente MCC misura la qualit\u00e0 delle previsioni di classificazione. Random Forest ottiene il valore pi\u00f9 alto, indicando prestazioni superiori.",
+        "mcnemar_description": "Il test di McNemar valuta le differenze significative tra due modelli. I risultati evidenziano vantaggi per Random Forest rispetto agli altri.",
     "history_title": "Analisi recenti"
     }
 }
@@ -201,41 +213,67 @@ def load_history(n=5):
 # --- PDF comparativo de modelos ---
 def generate_comparison_pdf(models, language):
     t = translations[language]
-    mcc_vals = np.random.uniform(0.6, 0.95, size=len(models))
-    mc_vals = np.random.uniform(0.01, 0.2, size=len(models))
 
-    fig, ax1 = plt.subplots()
-    index = np.arange(len(models))
-    bar_width = 0.35
-    ax1.bar(index, mcc_vals, bar_width, label="MCC")
-    ax1.set_xlabel("Model")
-    ax1.set_ylabel("MCC")
+    # Datos MCC reales por modelo
+    mcc_names = ["Random Forest", "CNN", "Regresión Logistica"]
+    mcc_vals = [0.9379, 0.6860, 0.5491]
 
-    ax2 = ax1.twinx()
-    ax2.plot(index, mc_vals, color="red", marker="o", label="McNemar p-value")
-    ax2.set_ylabel("McNemar p-value")
-    ax1.set_xticks(index)
-    ax1.set_xticklabels(models)
-    ax1.legend(loc="upper left")
-    ax2.legend(loc="upper right")
-
+    fig, ax = plt.subplots()
+    ax.bar(mcc_names, mcc_vals, color="skyblue")
+    ax.set_ylim(0, 1)
+    ax.set_ylabel("MCC")
+    ax.set_title(t.get("mcc_chart_title", "MCC"))
     buf = io.BytesIO()
     fig.savefig(buf, format="PNG")
     plt.close(fig)
     buf.seek(0)
-    img_path = "temp_plot.png"
-    with open(img_path, "wb") as f:
+    mcc_path = "mcc_plot.png"
+    with open(mcc_path, "wb") as f:
         f.write(buf.getvalue())
 
+    # Datos de la prueba de McNemar
+    comparisons = [
+        "Random Forest vs CNN",
+        "Random Forest vs Regresión Logistica",
+        "Regresión Logistica vs CNN",
+    ]
+    stats = [38.0, 28.0, 146.0]
+    p_vals = [0.00001, 0.00002, 0.00001]
+
+    fig2, ax2 = plt.subplots()
+    index = np.arange(len(comparisons))
+    ax2.bar(index, stats, color="lightgreen")
+    ax2.set_xticks(index)
+    ax2.set_xticklabels(comparisons, rotation=15)
+    ax2.set_ylabel("Statistic")
+    ax2.set_title(t.get("mcnemar_chart_title", "McNemar"))
+    for i, p in enumerate(p_vals):
+        ax2.text(i, stats[i], f"p={p:.5f}", ha="center", va="bottom", fontsize=8)
+    buf2 = io.BytesIO()
+    fig2.savefig(buf2, format="PNG")
+    plt.close(fig2)
+    buf2.seek(0)
+    mc_path = "mcnemar_plot.png"
+    with open(mc_path, "wb") as f:
+        f.write(buf2.getvalue())
+
+    # Construcción del PDF
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=14)
     pdf.cell(0, 10, txt=t["pdf_compare_title"], ln=True, align="C")
+    pdf.set_font("Arial", size=11)
+    pdf.cell(0, 10, txt=datetime.now().strftime("%Y-%m-%d %H:%M:%S"), ln=True, align="C")
     pdf.ln(5)
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, txt=f"MCC: {t['mcc_description']}\nMcNemar: {t['mcnemar_description']}")
+    pdf.image(mcc_path, x=10, w=190)
     pdf.ln(5)
-    pdf.image(img_path, x=10, w=190)
+    pdf.multi_cell(0, 10, t["mcc_description"])
+
+    pdf.add_page()
+    pdf.image(mc_path, x=10, w=190)
+    pdf.ln(5)
+    pdf.multi_cell(0, 10, t["mcnemar_description"])
+
     return pdf.output(dest='S').encode('latin1')
 
 # --- Predicción del modelo ---
@@ -261,66 +299,3 @@ def generate_pdf(result, confidence, language, image, cancer_type):
     pdf.set_font("Arial", size=14)
     pdf.cell(200, 10, txt=t["pdf_title"], ln=True, align='C')
     pdf.ln(10)
-    pdf.cell(200, 10, txt=f"{t['pdf_result']}: {result}", ln=True)
-    pdf.cell(200, 10, txt=f"{t['pdf_confidence']}: {confidence:.2f}%", ln=True)
-    pdf.cell(200, 10, txt=f"{t['pdf_recommendation']}: {t['recommendation_malignant' if result == 'Malignant' else 'recommendation_benign']}", ln=True)
-    if cancer_type:
-        pdf.cell(200, 10, txt=f"{t['pdf_type_detected']}: {cancer_type}", ln=True)
-    pdf.cell(200, 10, txt=f"{t['pdf_timestamp']}: {now}", ln=True)
-    pdf.ln(10)
-    pdf.cell(200, 10, txt=t["pdf_image_label"], ln=True)
-    pdf.image(image_path, x=10, y=None, w=100)
-    return pdf.output(dest='S').encode('latin1')
-
-# --- Interfaz de Usuario ---
-lang = st.sidebar.selectbox("🌐 Language / Idioma", list(translations.keys()))
-t = translations[lang]
-model_options = ["CNN", "Random Forest", "Regresión Logistica"]
-selected_model = st.sidebar.selectbox("🧠 Model", model_options)
-
-if st.sidebar.button(t["generate_compare_pdf"]):
-    comp_bytes = generate_comparison_pdf(model_options, lang)
-    b64_comp = base64.b64encode(comp_bytes).decode()
-    href_comp = f'<a href="data:application/pdf;base64,{b64_comp}" download="comparison_models.pdf">{t["download"]}</a>'
-    st.sidebar.markdown(href_comp, unsafe_allow_html=True)
-
-st.title(t["title"])
-st.markdown(f"**{t['upload']}**")
-uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "bmp", "webp", "tiff", "jfif", "tif"])
-
-if uploaded_file:
-    try:
-        image = Image.open(uploaded_file)
-        st.image(image, caption=t["upload"], use_column_width=True)
-
-        if st.button(t["button"]):
-            results = {}
-            for model in model_options:
-                label, confidence, cancer_type = predict(image, model)
-                results[model] = (label, confidence, cancer_type)
-
-            sel_label, sel_conf, sel_type = results[selected_model]
-            st.success(f"{t['result']}: {sel_label}")
-            st.info(f"{t['confidence']}: {sel_conf:.1f}%")
-            if sel_label == "Malignant":
-                st.warning(f"🔬 {t['pdf_type_detected']}: {sel_type}")
-                desc = cancer_descriptions.get(sel_type)
-                if desc:
-                    st.markdown(desc)
-
-            pdf_bytes = generate_pdf(sel_label, sel_conf, lang, image, sel_type)
-            b64_pdf = base64.b64encode(pdf_bytes).decode()
-            href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="prediction_report.pdf">{t["download"]}</a>'
-            st.markdown(href, unsafe_allow_html=True)
-
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            append_history(timestamp, selected_model, sel_label, sel_conf, sel_type, uploaded_file.name)
-            history_rows = load_history(5)
-            if history_rows:
-                st.subheader(t.get("history_title", "Historial"))
-                st.table(history_rows)
-
-    except UnidentifiedImageError:
-        st.error(t["error"])
-    except Exception as e:
-        st.error(f"{t['error']} ({str(e)})")
