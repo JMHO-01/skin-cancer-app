@@ -343,15 +343,16 @@ if uploaded_file:
         original_image = Image.open(uploaded_file)
         normalized_image = apply_clahe(original_image)
         rotated_image = normalized_image.rotate(np.random.uniform(-15, 15))
-        # Mostrar comparación visual
+
+        # Mostrar ambas imágenes
         st.markdown("### Imagen original vs procesada")
         st.image(
-    [    original_image, rotated_image],
-        caption=["Original", "Procesada (CLAHE + rotación)"],
-        width=300
+            [original_image, rotated_image],
+            caption=["Original", "Procesada (CLAHE + rotación)"],
+            width=300
         )
 
-        # Esta es la imagen que se usará para predecir
+        # Usar la imagen procesada para predicción
         image = rotated_image
 
         if st.button(t["button"]):
@@ -364,7 +365,7 @@ if uploaded_file:
             st.success(f"{t['result']}: {sel_label}")
             st.info(f"{t['confidence']}: {sel_conf:.1f}%")
             if sel_label == "Malignant":
-                st.warning(f"🔬 {t['pdf_type_detected']}: {sel_type}")
+                st.warning(f"{t['pdf_type_detected']}: {sel_type}")
                 desc = cancer_descriptions.get(sel_type)
                 if desc:
                     st.markdown(desc)
@@ -385,4 +386,3 @@ if uploaded_file:
         st.error(t["error"])
     except Exception as e:
         st.error(f"{t['error']} ({str(e)})")
-        
