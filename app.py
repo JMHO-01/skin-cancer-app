@@ -9,6 +9,7 @@ import csv
 from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
+import cv2
 
 # --- Tipos de cáncer posibles ---
 malignant_types = [
@@ -190,6 +191,18 @@ translations = {
     }
 }
 
+def apply_clahe(image_pil):
+    image_np = np.array(image_pil.convert("RGB"))
+    resized = cv2.resize(image_np, (224, 224))
+    lab = cv2.cvtColor(resized, cv2.COLOR_RGB2LAB)
+    l, a, b = cv2.split(lab)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    cl = clahe.apply(l)
+    merged = cv2.merge((cl, a, b))
+    final = cv2.cvtColor(merged, cv2.COLOR_LAB2RGB)
+    return Image.fromarray(final)
+
+
 # --- Manejo de historial ---
 def append_history(timestamp, model, result, confidence, cancer_type, image_name):
     file_path = Path("historial.csv")
@@ -327,8 +340,20 @@ uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "bmp", "webp", 
 
 if uploaded_file:
     try:
-        image = Image.open(uploaded_file)
-        st.image(image, caption=t["upload"], use_column_width=True)
+        original_image = Image.open(uploaded_file)
+normalized_image = apply_clahe(original_image)
+rotated_image = normalized_image.rotate(np.random.uniform(-15, 15))
+
+# Mostrar comparación visual
+st.markdown("### Imagen original vs procesada")
+st.image(
+    [original_image, rotated_image],
+    caption=["Original", "Procesada (CLAHE + rotación)"],
+    width=300
+)
+
+# Esta es la imagen que se usará para predecir
+image = rotated_image
 
         if st.button(t["button"]):
             results = {}
