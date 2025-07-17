@@ -168,7 +168,6 @@ def generate_pdf(result, confidence, language, image, cancer_type):
     pdf.image(image_path, x=10, y=None, w=100)
     return pdf.output(dest='S').encode('latin1')
 
-
 # --- Interfaz de Usuario ---
 lang = st.sidebar.selectbox("🌐 Language / Idioma", list(translations.keys()))
 t = translations[lang]
@@ -179,29 +178,24 @@ st.title(t["title"])
 st.markdown(f"**{t['upload']}**")
 uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "bmp", "webp", "tiff", "jfif", "tif"])
 
-# ... (todo el código anterior permanece igual hasta esta parte)
-
 if uploaded_file:
     try:
         image = Image.open(uploaded_file)
         st.image(image, caption=t["upload"], use_column_width=True)
 
         if st.button(t["button"]):
-            # Solo se genera el resultado del modelo seleccionado
-            label, confidence, cancer_type = simulate_prediction(image, selected_model)
+            results = {}
+            for model in model_options:
+                label, confidence, cancer_type = predict(image, model)
+                results[model] = (label, confidence, cancer_type)
 
-            # Mostrar resultado como si fuera real
-            st.success(f"{t['result']}: {label}")
-            st.info(f"{t['confidence']}: {confidence:.1f}%")
+            sel_label, sel_conf, sel_type = results[selected_model]
+            st.success(f"{t['result']}: {sel_label}")
+            st.info(f"{t['confidence']}: {sel_conf:.1f}%")
+            if sel_label == "Malignant":
+                st.warning(f"🔬 {t['pdf_type_detected']}: {sel_type}")
 
-            if label == "Malignant":
-                st.warning(f"🔬 {t['pdf_type_detected']}: {cancer_type}")
-                st.warning(t["recommendation_malignant"])
-            else:
-                st.success(t["recommendation_benign"])
-
-            # Generación del PDF con el modelo seleccionado
-            pdf_bytes = generate_pdf(label, confidence, lang, image, cancer_type)
+            pdf_bytes = generate_pdf(sel_label, sel_conf, lang, image, sel_type)
             b64_pdf = base64.b64encode(pdf_bytes).decode()
             href = f'<a href="data:application/pdf;base64,{b64_pdf}" download="prediction_report.pdf">{t["download"]}</a>'
             st.markdown(href, unsafe_allow_html=True)
