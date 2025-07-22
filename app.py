@@ -348,8 +348,8 @@ model_options = [
     "CNN",
     "Random Forest",
     "Regresión Logistica",
-    "CNN + Random Forest",
-    "CNN + Regresión Logistica"
+    "CNN + RF",
+    "CNN + RL"
 ]
 selected_model = st.sidebar.selectbox("🧠 Model", model_options)
 
