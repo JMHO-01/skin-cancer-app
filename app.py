@@ -230,9 +230,9 @@ def generate_comparison_pdf(models, language):
     mcc_names = [
         "Random Forest",
         "Regresión Logística",
-        "CNN Puro",
-        "Híbrido CNN + Random Forest",
-        "Híbrido CNN + Regresión Logística"
+        "CNN",
+        "CNN + Random Forest",
+        "CNN + Regresión Logística"
     ]
 
     mcc_vals = [
@@ -260,8 +260,8 @@ def generate_comparison_pdf(models, language):
     comparisons = [
     "Random Forest vs Regresión Logística",
     "Random Forest vs CNN Puro",
-    "Random Forest vs Híbrido CNN + RF",
-    "Random Forest vs Híbrido CNN + RL"
+    "RF vs Híbrido CNN + RF",
+    "RF vs Híbrido CNN + RL"
     ]
 
     stats = [6.620690, 0.158416, 2.234637, 2.028090]
