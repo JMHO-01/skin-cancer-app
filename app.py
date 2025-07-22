@@ -231,8 +231,8 @@ def generate_comparison_pdf(models, language):
         "Random Forest",
         "Regresión Logística",
         "CNN",
-        "CNN + Random Forest",
-        "CNN + Regresión Logística"
+        "CNN + RF",
+        "CNN + RL"
     ]
 
     mcc_vals = [
