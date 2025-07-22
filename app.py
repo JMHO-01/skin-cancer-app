@@ -227,8 +227,21 @@ def generate_comparison_pdf(models, language):
     t = translations[language]
 
     # Datos MCC reales por modelo
-    mcc_names = ["Random Forest", "CNN", "Regresión Logistica"]
-    mcc_vals = [0.9379, 0.6860, 0.5491]
+    mcc_names = [
+        "Random Forest",
+        "Regresión Logística",
+        "CNN Puro",
+        "Híbrido CNN + Random Forest",
+        "Híbrido CNN + Regresión Logística"
+    ]
+
+    mcc_vals = [
+        0.716,  # Random Forest
+        0.633,  # Regresión Logística
+        0.710,  # CNN puro
+        0.625,  # Híbrido CNN + RF
+        0.639   # Híbrido CNN + RL
+    ]
 
     fig, ax = plt.subplots()
     ax.bar(mcc_names, mcc_vals, color="skyblue")
@@ -245,12 +258,18 @@ def generate_comparison_pdf(models, language):
 
     # Datos de la prueba de McNemar
     comparisons = [
-        "Random Forest vs CNN",
-        "Random Forest vs Regresión Logistica",
-        "Regresión Logistica vs CNN",
+    "Random Forest vs Regresión Logística",
+    "Random Forest vs CNN Puro",
+    "Random Forest vs Híbrido CNN + RF",
+    "Random Forest vs Híbrido CNN + RL"
     ]
-    stats = [38.0, 28.0, 146.0]
-    p_vals = [0.00001, 0.00002, 0.00001]
+
+    stats = [6.620690, 0.158416, 2.234637, 2.028090]
+    p_vals = [0.010080, 0.690619, 0.134948, 0.154415]
+
+    colors = ["#3b8fc2", "#8db3e2", "#6eb5a3", "#dca965", "#b76d68"]
+    ax.bar(mcc_names, mcc_vals, color=colors)
+
 
     fig2, ax2 = plt.subplots()
     index = np.arange(len(comparisons))
@@ -325,7 +344,13 @@ def generate_pdf(result, confidence, language, image, cancer_type):
 # --- Interfaz de Usuario ---
 lang = st.sidebar.selectbox("🌐 Language / Idioma", list(translations.keys()))
 t = translations[lang]
-model_options = ["CNN", "Random Forest", "Regresión Logistica"]
+model_options = [
+    "CNN",
+    "Random Forest",
+    "Regresión Logistica",
+    "CNN + Random Forest",
+    "CNN + Regresión Logistica"
+]
 selected_model = st.sidebar.selectbox("🧠 Model", model_options)
 
 if st.sidebar.button(t["generate_compare_pdf"]):
